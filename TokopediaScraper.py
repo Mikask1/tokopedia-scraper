@@ -21,10 +21,11 @@ class Tokopedia:
 
         return webdriver.Chrome(executable_path=chromedriver, options=opt)
 
-    def get_details(self, detail_container, rank):
+    def get_details(self, detail_container, category, rank):
         # Scrape to get all parameters
         detail = dict()
         detail['rank'] = rank
+        detail['category'] = category
         # Name
         try:
             name = detail_container.find_element(
@@ -91,7 +92,7 @@ class Tokopedia:
                 detail_container = container.find_element(By.TAG_NAME, "div").find_element(
                     By.TAG_NAME, "div").find_elements(By.XPATH, "./div")[1].find_element(By.TAG_NAME, "a")
 
-                details = self.get_details(detail_container, index)
+                details = self.get_details(detail_container, cat, index)
                 try:
                     links = container.find_element(
                         By.XPATH, './/a[contains(@href, "ta.tokopedia.com")]')
