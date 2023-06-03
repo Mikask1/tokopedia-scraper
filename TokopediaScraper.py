@@ -47,7 +47,7 @@ class Tokopedia:
                 By.XPATH, ".//div[@data-testid='spnSRPProdName']").get_attribute("innerHTML")
             detail['name'] = name
         except Exception as e:
-            ...
+            detail['name'] = None
 
         # Price
         try:
@@ -64,7 +64,7 @@ class Tokopedia:
                 By.XPATH, ".//span[@data-testid='spnSRPProdTabShopLoc']").get_attribute("innerHTML")
             detail['location'] = location
         except Exception as e:
-            ...
+            detail['location'] = None
 
         # Rating
         try:
@@ -73,7 +73,7 @@ class Tokopedia:
             rating = float(rating)
             detail['rating'] = rating
         except Exception as e:
-            detail['rating'] = 0
+            detail['rating'] = None
 
         # Sold
         try:
@@ -86,9 +86,9 @@ class Tokopedia:
                 sold = int(re.sub('[^0-9]', '', sold))
             detail['sold'] = sold
         except Exception as e:
-            detail['sold'] = 0
+            detail['sold'] = None
 
-        detail['id'] = str(uuid.uuid4())
+        # detail['id'] = str(uuid.uuid4())
         return detail
 
     def search(self, cat):
@@ -110,15 +110,22 @@ class Tokopedia:
                 details = self.get_details(detail_container, cat, index)
                 try:
                     links = container.find_element(
-                        By.XPATH, './/a[contains(@href, "ta.tokopedia.com")]')
+                        By.XPATH, './/a[contains(@href, "tokopedia.com")]')
                     url = links.get_attribute("href")
-                    encoded_uri = url.split("r=")[1]
                     decoded_uri = urllib.parse.unquote(
-                        encoded_uri).split("?")[0]
+                        url).split("?")[0]
                     details['url'] = decoded_uri
                     self.data.append(details)
                 except Exception:
                     details['url'] = None
+                    
+                try:
+                    image = container.find_element(
+                        By.XPATH, './/img[contains(@src, "images.tokopedia")]')
+                    details['image'] = image.get_attribute("src")
+                except:
+                    details['image'] = None
+                    print("here")
                 self.driver.execute_script("window.scrollTo(0, 1000);")
 
         self.data = [dict(t) for t in {tuple(d.items())
@@ -130,8 +137,8 @@ class Tokopedia:
         self.driver.close()
 
 
-tokopedia = Tokopedia("resources/chromedriver/chromedriver.exe")
+tokopedia = Tokopedia(
+    "resources/chromedriver/chromedriver.exe", headless=False)
 
 items = tokopedia.search("tensimeter")
 print(items)
-print(len(items))
