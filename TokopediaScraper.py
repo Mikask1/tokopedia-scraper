@@ -137,8 +137,9 @@ class Tokopedia:
         self.driver.close()
 
 
-tokopedia = Tokopedia(
-    "resources/chromedriver/chromedriver.exe", headless=False)
+if __name__ == '__main__':
+    tokopedia = Tokopedia(
+        "resources/chromedriver/chromedriver.exe", headless=False)
 
-items = tokopedia.search("tensimeter")
-print(items)
+    items = tokopedia.search("tensimeter")
+    print(items)
